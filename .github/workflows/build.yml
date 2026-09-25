@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.11.11"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -32,7 +32,7 @@ jobs:
       - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install "cython<3.0.0" buildozer
+          python -m pip install "cython<3.0.0" buildozer python-for-android
 
       - name: Clear Corrupted Buildozer Cache
         run: |
@@ -40,26 +40,23 @@ jobs:
           rm -rf bin
           rm -rf ~/.buildozer
 
-      - name: Overwrite Host Python Paths & Build
+      - name: Overwrite Toolchain Bindings & Build
         run: |
-          # 1. Locate exactly where our safe Python 3.11 executable is hidden
-          SAFE_PYTHON=$(which python)
+          # Detect the exact tool cache python 3.11 runtime path
+          EXACT_PYTHON_PATH=$(which python)
           
-          # 2. Force create a local bin override path to strip the runner's Python 3.14 alias
+          # Force link systemic environment pointers away from host 3.14 layers
           mkdir -p $HOME/.local/bin
-          ln -sf $SAFE_PYTHON $HOME/.local/bin/python3
-          ln -sf $SAFE_PYTHON $HOME/.local/bin/python
-          
-          # 3. Inject our safe override directly into the front of the PATH variable
+          ln -sf $EXACT_PYTHON_PATH $HOME/.local/bin/python3
+          ln -sf $EXACT_PYTHON_PATH $HOME/.local/bin/python
           export PATH=$HOME/.local/bin:$PATH
           
-          # 4. Verify that 'python3' now points directly to 3.11 matching host python
-          python3 --version
-          
-          # 5. Kick off build completely isolated from the system's experimental python
+          # Setup basic android parameters
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
-          yes | buildozer -v android debug
+          
+          # Run build explicitly assigning deep variable overrides
+          env PYTHON=python3 P4A_hostpython=$EXACT_PYTHON_PATH yes | buildozer -v android debug
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
