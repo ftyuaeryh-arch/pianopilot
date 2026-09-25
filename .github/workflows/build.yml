@@ -1,0 +1,34 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Unzip project archive
+        run: |
+          unzip -o pianopilot_mobile.zip
+          if [ -d "pianopilot_mobile" ] && [ -f "pianopilot_mobile/buildozer.spec" ]; then
+            cp -r pianopilot_mobile/* .
+          fi
+
+      - name: Build APK with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          command: buildozer android debug
+          buildozer_version: stable
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pianopilot-apk
+          path: ${{ steps.buildozer.outputs.filename }}
