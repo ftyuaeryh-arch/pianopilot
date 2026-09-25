@@ -19,7 +19,7 @@ source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
 
 # Application requirements (add any other python libraries your app needs here)
-requirements = python3,kivy
+requirements = python3==3.11.5,kivy
 
 # Icon path (matches the assets folder created earlier)
 icon.filename = %(source.dir)s/assets/icon.png
