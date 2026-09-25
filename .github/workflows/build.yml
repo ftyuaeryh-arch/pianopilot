@@ -34,6 +34,17 @@ jobs:
           pip install --upgrade pip
           pip install "cython<3.0.0" buildozer
 
+      - name: Pin target Python version in buildozer.spec
+        run: |
+          python3 -c "
+          with open('buildozer.spec', 'r') as f:
+              content = f.read()
+          content = content.replace('requirements = python3,', 'requirements = python3==3.10.11,hostpython3==3.10.11,')
+          content = content.replace('requirements = python3\n', 'requirements = python3==3.10.11,hostpython3==3.10.11\n')
+          with open('buildozer.spec', 'w') as f:
+              f.write(content)
+          "
+
       - name: Build APK with Buildozer
         run: |
           yes y | buildozer android debug
