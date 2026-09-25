@@ -43,10 +43,10 @@ android.minapi = 24
 # (str) Android NDK version to use
 android.ndk = 25b
 
-# (list) The Android architectures to build for (Using 64-bit to maximize build speed)
+# (list) The Android architectures to build for
 android.archs = arm64-v8a
 
-# (str) Forces python-for-android to use stable setup branches
+# (str) Core recipe mapping configuration to force clean 3.11 builds
 p4a.branch = master
 
 # =============================================================================
