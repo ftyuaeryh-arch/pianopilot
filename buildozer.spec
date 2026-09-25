@@ -7,8 +7,8 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
 
-# Standard Python 3 requirement
-requirements = python3,kivy
+# Pin python3 to 3.11.9 to match setup-python in build.yml
+requirements = python3==3.11.9,kivy
 
 icon.filename = %(source.dir)s/assets/icon.png
 orientation = portrait
