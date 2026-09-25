@@ -2,55 +2,47 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Unzip project archive
-        run: |
-          if [ -f "pianopilot_mobile.zip" ]; then
-            unzip -o pianopilot_mobile.zip
-            if [ -d "pianopilot_mobile" ]; then
-              cp -r pianopilot_mobile/* .
-            fi
-          fi
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: '3.10'
 
-      - name: Install build dependencies
+      - name: Set up JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install System Dependencies & Buildozer
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libffi-dev libssl-dev libltdl-dev
+          sudo apt install -y git zip unzip python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libffi-dev libssl-dev libltdl-dev
           pip install --upgrade pip
           pip install "cython<3.0.0" buildozer
 
-      - name: Pin target Python version in buildozer.spec
+      - name: Verify Environment
         run: |
-          python3 -c "
-          with open('buildozer.spec', 'r') as f:
-              content = f.read()
-          content = content.replace('requirements = python3,', 'requirements = python3==3.10.11,hostpython3==3.10.11,')
-          content = content.replace('requirements = python3\n', 'requirements = python3==3.10.11,hostpython3==3.10.11\n')
-          with open('buildozer.spec', 'w') as f:
-              f.write(content)
-          "
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
-      - name: Build APK with Buildozer
+      - name: Build with Buildozer
         run: |
           yes y | buildozer android debug
 
-      - name: Upload APK Artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pianopilot-apk
+          name: debug-apk
           path: bin/*.apk
