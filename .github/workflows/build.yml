@@ -2,33 +2,36 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main, master ]
-  workflow_dispatch:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Unzip project archive
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
         run: |
-          unzip -o pianopilot_mobile.zip
-          if [ -d "pianopilot_mobile" ] && [ -f "pianopilot_mobile/buildozer.spec" ]; then
-            cp -r pianopilot_mobile/* .
-          fi
+          sudo apt update
+          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libffi-dev libssl-dev libltdl-dev
+          pip install --upgrade pip
+          pip install buildozer cython
 
       - name: Build APK with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
-        with:
-          command: buildozer android debug
-          buildozer_version: stable
+        run: |
+          buildozer android debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pianopilot-apk
-          path: ${{ steps.buildozer.outputs.filename }}
+          name: package
+          path: bin/*.apk
