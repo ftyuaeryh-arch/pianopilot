@@ -8,7 +8,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Explicitly locks the pipeline to an OS that uses stable python environments
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,23 +41,11 @@ jobs:
           rm -rf bin
           rm -rf ~/.buildozer
 
-      - name: Overwrite Toolchain Bindings & Build
+      - name: Build with Buildozer
         run: |
-          # Detect the exact tool cache python 3.11 runtime path
-          EXACT_PYTHON_PATH=$(which python)
-          
-          # Force link systemic environment pointers away from host 3.14 layers
-          mkdir -p $HOME/.local/bin
-          ln -sf $EXACT_PYTHON_PATH $HOME/.local/bin/python3
-          ln -sf $EXACT_PYTHON_PATH $HOME/.local/bin/python
-          export PATH=$HOME/.local/bin:$PATH
-          
-          # Setup basic android parameters
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
-          
-          # Run build explicitly assigning deep variable overrides
-          env PYTHON=python3 P4A_hostpython=$EXACT_PYTHON_PATH yes | buildozer -v android debug
+          yes | buildozer -v android debug
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
