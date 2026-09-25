@@ -34,23 +34,29 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install "cython<3.0.0" buildozer
 
-      - name: Verify Environment
-        run: |
-          java -version
-          javac -version
-          python --version
-          buildozer --version
-
-      - name: Force Clear Corrupted Buildozer Cache
+      - name: Clear Corrupted Buildozer Cache
         run: |
           rm -rf .buildozer
           rm -rf bin
           rm -rf ~/.buildozer
 
-      - name: Build with Buildozer
-        env:
-          PYTHON: python3
+      - name: Overwrite Host Python Paths & Build
         run: |
+          # 1. Locate exactly where our safe Python 3.11 executable is hidden
+          SAFE_PYTHON=$(which python)
+          
+          # 2. Force create a local bin override path to strip the runner's Python 3.14 alias
+          mkdir -p $HOME/.local/bin
+          ln -sf $SAFE_PYTHON $HOME/.local/bin/python3
+          ln -sf $SAFE_PYTHON $HOME/.local/bin/python
+          
+          # 3. Inject our safe override directly into the front of the PATH variable
+          export PATH=$HOME/.local/bin:$PATH
+          
+          # 4. Verify that 'python3' now points directly to 3.11 matching host python
+          python3 --version
+          
+          # 5. Kick off build completely isolated from the system's experimental python
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
           yes | buildozer -v android debug
