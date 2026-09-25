@@ -19,8 +19,7 @@ source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
 
 # (list) Application requirements
-# comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy
+requirements = python3==3.11.11,kivy==2.3.1
 
 # (str) Icon of the application
 icon.filename = %(source.dir)s/assets/icon.png
@@ -44,8 +43,11 @@ android.minapi = 24
 # (str) Android NDK version to use
 android.ndk = 25b
 
-# (list) The Android architectures to build for
-android.archs = arm64-v8a, armeabi-v7a
+# (list) The Android architectures to build for (Using 64-bit to maximize build speed)
+android.archs = arm64-v8a
+
+# (str) Forces python-for-android to use stable setup branches
+p4a.branch = master
 
 # =============================================================================
 # Buildozer Settings
