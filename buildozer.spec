@@ -19,9 +19,10 @@ source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
 
 # (list) Application requirements
-# hostpython3 pin removed: forcing it to match python3's exact patch version
-# isn't required and risks the recipe not having that specific version.
-requirements = python3==3.11.11,kivy==2.3.1
+# python3 and hostpython3 MUST be pinned to the same version — p4a
+# validates this and hard-fails otherwise (confirmed by build log:
+# "python3 should have same version as hostpython3").
+requirements = python3==3.11.11,hostpython3==3.11.11,kivy==2.3.1
 
 # (str) Icon of the application
 icon.filename = %(source.dir)s/assets/icon.png
@@ -37,7 +38,7 @@ fullscreen = 0
 # =============================================================================
 
 # (int) Target Android API, should be as high as possible.
-android.api = 33
+android.api = 36
 
 # (int) Minimum API your APK will support.
 android.minapi = 24
