@@ -19,8 +19,9 @@ source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
 
 # (list) Application requirements
-# IMPROVEMENT: Explicitly pinned hostpython3 to match python3
-requirements = python3==3.11.11,hostpython3==3.11.11,kivy==2.3.1
+# hostpython3 pin removed: forcing it to match python3's exact patch version
+# isn't required and risks the recipe not having that specific version.
+requirements = python3==3.11.11,kivy==2.3.1
 
 # (str) Icon of the application
 icon.filename = %(source.dir)s/assets/icon.png
@@ -47,11 +48,13 @@ android.ndk = 25b
 # (list) The Android architectures to build for
 android.archs = arm64-v8a
 
-# IMPROVEMENT: Automatically accept SDK licenses (Crucial for GitHub Actions CI/CD)
+# (bool) Automatically accept SDK licenses (needed for CI/CD)
 android.accept_sdk_license = True
 
 # (str) Core recipe mapping configuration
-p4a.branch = master
+# "develop" is what Buildozer's own CI uses; "master" is the stale default.
+# For long-term reproducibility, consider pinning to a specific p4a tag/commit instead.
+p4a.branch = develop
 
 # =============================================================================
 # Buildozer Settings
