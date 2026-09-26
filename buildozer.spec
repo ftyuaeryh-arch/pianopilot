@@ -19,7 +19,8 @@ source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
 
 # (list) Application requirements
-requirements = python3==3.11.11,kivy==2.3.1
+# IMPROVEMENT: Explicitly pinned hostpython3 to match python3
+requirements = python3==3.11.11,hostpython3==3.11.11,kivy==2.3.1
 
 # (str) Icon of the application
 icon.filename = %(source.dir)s/assets/icon.png
@@ -46,7 +47,10 @@ android.ndk = 25b
 # (list) The Android architectures to build for
 android.archs = arm64-v8a
 
-# (str) Core recipe mapping configuration to force clean 3.11 builds
+# IMPROVEMENT: Automatically accept SDK licenses (Crucial for GitHub Actions CI/CD)
+android.accept_sdk_license = True
+
+# (str) Core recipe mapping configuration
 p4a.branch = master
 
 # =============================================================================
